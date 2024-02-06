@@ -1,5 +1,0 @@
-if(EXISTS "/home/juliengauthier410/l3/s6/programmation_Multi-Paradigme/projet 1/pointers/build/testPointers[1]_tests.cmake")
-  include("/home/juliengauthier410/l3/s6/programmation_Multi-Paradigme/projet 1/pointers/build/testPointers[1]_tests.cmake")
-else()
-  add_test(testPointers_NOT_BUILT testPointers_NOT_BUILT)
-endif()
