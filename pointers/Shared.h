@@ -17,23 +17,24 @@ namespace sp
   public:
     /**
      * @brief Constructor takes a dynamic pointer
-     * 
+     *
      * @param ptr
-     * 
-     * @note  The constructor should initialize the reference count to 1 if the pointer is not null, 
+     *
+     * @note  The constructor should initialize the reference count to 1 if the pointer is not null,
      *        and to 0 if the pointer is null.
      */
     Shared(T *ptr = nullptr)
     {
-      m_refCount = new std::size_t(1); // m_refCount should be a pointer to std::size_t 
       // if ptr is not null, we create a new reference
       if (ptr)
       {
-        m_ptr = ptr;            // m_ptr should be a pointer to T
+        m_ptr = ptr;                     // m_ptr should be a pointer to T
+        m_refCount = new std::size_t(1); // m_refCount should be a pointer to std::size_t
       }
       else
       {
-        m_ptr = nullptr;        // m_ptr should be a pointer to T
+        m_ptr = nullptr;
+        m_refCount = nullptr;
       }
     }
 
@@ -43,7 +44,7 @@ namespace sp
     ~Shared()
     {
       // decrease the reference count and delete the pointer if m_refCount is 0
-      if (--(*m_refCount) == 0)
+      if (m_refCount && --(*m_refCount) == 0)
       {
         delete m_ptr;      // delete the pointer
         delete m_refCount; // delete the reference count
@@ -52,9 +53,9 @@ namespace sp
 
     /**
      * @brief Copy constructor
-     * 
+     *
      * @param other
-     * 
+     *
      * @note  The copy constructor should increment the reference count of the shared pointer.
      */
     Shared(const Shared &other) : m_ptr(other.m_ptr), m_refCount(other.m_refCount)
@@ -65,40 +66,33 @@ namespace sp
 
     /**
      * @brief Copy assignment operator
-     * 
+     *
      * @param other
-     * 
+     *
      * @note  The copy assignment operator should increment the reference count of the shared pointer.
      */
     Shared &operator=(const Shared &other)
     {
-      if (this == &other)
+      if (this != &other)
       {
-        return *this;
-      }
-      // if the current pointer is not the same as the other pointer
-      else if (m_ptr != other.m_ptr)
-      {
-        // decrease the reference count and delete the pointer if m_refCount is 0
-        if (--(*m_refCount) == 0)
+        if (m_refCount && --(*m_refCount) == 0)
         {
-          delete m_ptr;      // delete the pointer
-          delete m_refCount; // delete the reference count
+          delete m_ptr;
+          delete m_refCount;
         }
-
-        // copy the other pointer and reference count
         m_ptr = other.m_ptr;
         m_refCount = other.m_refCount;
-
-        // Increment the shared reference count.
-        (*m_refCount)++;
+        if (m_refCount)
+        {
+          (*m_refCount)++;
+        }
       }
       return *this;
     }
 
     /**
      * @brief Get the raw pointer
-     * 
+     *
      * @return T* the raw pointer
      */
     T *get()
@@ -108,7 +102,7 @@ namespace sp
 
     /**
      * @brief Get a reference on pointed data
-     * 
+     *
      * @return T& the reference on pointed data or throw an exception if the pointer is null
      */
     T &operator*()
@@ -122,7 +116,7 @@ namespace sp
 
     /**
      * @brief Get the raw pointer
-     * 
+     *
      * @return T* the raw pointer
      */
     T *operator->()
@@ -132,17 +126,17 @@ namespace sp
 
     /**
      * @brief Get the number of Shared pointed on the current pointer
-     * 
+     *
      * @return std::size_t the number of Shared pointed on the current pointer
      */
     std::size_t count() const
     {
-      return *m_refCount;
+      return m_refCount ? *m_refCount : 0;
     }
 
     /**
      * @brief  Check if the raw pointer exists
-     * 
+     *
      * @return true if the raw pointer exists
      */
     bool exists() const

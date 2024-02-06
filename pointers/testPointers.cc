@@ -1,8 +1,5 @@
-#ifndef TEST_UNIQUE
 #define TEST_UNIQUE 0
-#ifndef TEST_SHARED
 #define TEST_SHARED 1
-#ifndef TEST_WEAK
 #define TEST_WEAK 0
 
 #include <gtest/gtest.h>
@@ -26,12 +23,63 @@ TEST_F(UniqueTest, testConstructor)
 /******************************************
  * Test the Shared class                  *
  ******************************************/
-TEST(SharedTest, testConstructor)
+class SharedTest : public ::testing::Test
 {
-  sp::Shared<int> shared(new int(5));
-  EXPECT_EQ(shared.get(), 5);
-  EXPECT_EQ(shared.count(), 1);
-}
+  protected:
+    sp::Shared<int> shared;
+    sp::Shared<int> sharedI;
+    sp::Shared<std::string> sharedS;
+    void SetUp() override
+    {
+      // init shared pointer with int
+      sharedI = sp::Shared<int>(new int(5));
+      // init shared pointer with string
+      sharedS = sp::Shared<std::string>(new std::string("Hello"));
+    }
+
+    void TearDown() override
+    {
+    }
+};
+  TEST_F(SharedTest, Constructor_default)
+  {
+    EXPECT_EQ(shared.get(), nullptr);
+    EXPECT_EQ(shared.count(), 0);
+  }
+
+  TEST_F(SharedTest, Constructor_dynamic)
+  {
+    EXPECT_EQ(*sharedI.get(), 5);
+    EXPECT_EQ(sharedI.count(), 1);
+  }
+
+  TEST_F(SharedTest, Constructor_dynamic_string)
+  {
+    EXPECT_EQ(*sharedS.get(), "Hello");
+    EXPECT_EQ(sharedS.count(), 1);
+  }
+
+  TEST_F(SharedTest, CopyConstructor)
+  {
+    sp::Shared<int> sharedCopy(sharedI);
+    EXPECT_EQ(*sharedCopy.get(), 5);
+    EXPECT_EQ(sharedCopy.count(), 2);
+  }
+
+  TEST_F(SharedTest, CopyConstructor_string)
+  {
+    sp::Shared<std::string> sharedCopy(sharedS);
+    EXPECT_EQ(*sharedCopy.get(), "Hello");
+    EXPECT_EQ(sharedCopy.count(), 2);
+  }
+
+  TEST_F(SharedTest, Get)
+  {
+    EXPECT_EQ(*sharedI.get(), 5);
+    EXPECT_FALSE(sharedI.get() == nullptr);
+    EXPECT_EQ(sharedI.count(), 1);
+  
+  }
 #endif // TEST_SHARED
 
 #if TEST_WEAK
@@ -50,7 +98,3 @@ int main(int argc, char *argv[])
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-
-#endif // TEST_UNIQUE
-#endif // TEST_SHARED
-#endif // TEST_WEAK
