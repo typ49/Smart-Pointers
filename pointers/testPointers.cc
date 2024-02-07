@@ -1,8 +1,16 @@
-#define TEST_UNIQUE 0
+#ifndef TEST_UNIQUE
+#define TEST_UNIQUE 1
+#endif // TEST_UNIQUE
+#ifndef TEST_SHARED
 #define TEST_SHARED 1
+#endif // TEST_SHARED
+#ifndef TEST_WEAK
 #define TEST_WEAK 0
+#endif // TEST_WEAK
 
 #include <gtest/gtest.h>
+
+#include <iostream>
 
 #include "Shared.h"
 #include "Weak.h"
@@ -12,10 +20,40 @@
 /******************************************
  * Test the Unique class                  *
  ******************************************/
-TEST_F(UniqueTest, testConstructor)
+
+class UniqueTest : public ::testing::Test
 {
-  sp::Unique<int> unique;
-  EXPECT_EQ(unique.get(), nullptr);
+  protected:
+
+  void SetUp() override
+  {
+  }
+
+  void TearDown() override
+  {
+  }
+};
+
+TEST_F(UniqueTest, MoveConstructor) {
+  sp::Unique<int> unique1(new int(5));
+  sp::Unique<int> unique2(std::move(unique1));
+  EXPECT_EQ(*unique2, 5);
+  EXPECT_EQ(unique1.get(), nullptr);
+}
+
+TEST_F(UniqueTest, MoveAssignment) {
+  sp::Unique<int> unique1(new int(5));
+  sp::Unique<int> unique2;
+  unique2 = std::move(unique1);
+  EXPECT_EQ(*unique2, 5);
+  EXPECT_EQ(unique1.get(), nullptr);
+}
+
+TEST_F(UniqueTest, NonCopyable) {
+  sp::Unique<int> unique1(new int(5));
+  // Uncommenting the following lines should cause a compile error
+  // sp::Unique<int> unique2(unique1);
+  // sp::Unique<int> unique3 = unique1;
 }
 #endif // TEST_UNIQUE
 
@@ -23,6 +61,7 @@ TEST_F(UniqueTest, testConstructor)
 /******************************************
  * Test the Shared class                  *
  ******************************************/
+
 class SharedTest : public ::testing::Test
 {
   protected:
