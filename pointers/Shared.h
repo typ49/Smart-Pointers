@@ -52,13 +52,50 @@ namespace sp
     }
 
     /**
+     * @brief Move constructor
+     *
+     * @param other
+     *
+     * @note The move constructor should steal the resource from the other shared pointer.
+     */
+    Shared(Shared &&other) noexcept : m_refCount(other.m_refCount), m_ptr(other.m_ptr)
+    {
+      other.m_ptr = nullptr;
+      other.m_refCount = nullptr;
+    }
+
+    /**
+     * @brief Move assignment operator
+     *
+     * @param other
+     *
+     * @note The move assignment operator should steal the resource from the other shared pointer.
+     */
+    Shared &operator=(Shared &&other) noexcept
+    {
+      if (this != &other)
+      {
+        if (m_refCount && --(*m_refCount) == 0)
+        {
+          delete m_ptr;
+          delete m_refCount;
+        }
+        m_refCount = other.m_refCount;
+        m_ptr = other.m_ptr;
+        other.m_ptr = nullptr;
+        other.m_refCount = nullptr;
+      }
+      return *this;
+    }
+
+    /**
      * @brief Copy constructor
      *
      * @param other
      *
      * @note  The copy constructor should increment the reference count of the shared pointer.
      */
-    Shared(const Shared &other) : m_ptr(other.m_ptr), m_refCount(other.m_refCount)
+    Shared(const Shared &other) : m_refCount(other.m_refCount), m_ptr(other.m_ptr)
     {
       // Increment the shared reference count.
       (*m_refCount)++;
@@ -80,8 +117,8 @@ namespace sp
           delete m_ptr;
           delete m_refCount;
         }
-        m_ptr = other.m_ptr;
         m_refCount = other.m_refCount;
+        m_ptr = other.m_ptr;
         if (m_refCount)
         {
           (*m_refCount)++;

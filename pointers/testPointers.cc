@@ -80,6 +80,41 @@ class SharedTest : public ::testing::Test
     EXPECT_EQ(sharedI.count(), 1);
   
   }
+
+  TEST_F(SharedTest, BasicUsage) {
+    sp::Shared<int> ptr(new int(5));
+    ASSERT_EQ(*ptr, 5);
+    ASSERT_EQ(ptr.count(), 1);
+    ASSERT_TRUE(ptr.exists());
+  }
+
+  TEST_F(SharedTest, CopySemantics) {
+    sp::Shared<int> ptr1(new int(5));
+    sp::Shared<int> ptr2 = ptr1;
+    ASSERT_EQ(*ptr2, 5);
+    ASSERT_EQ(ptr1.count(), 2);
+    ASSERT_EQ(ptr2.count(), 2);
+  }
+
+  TEST_F(SharedTest, MoveSemantics) {
+    sp::Shared<int> ptr1(new int(5));
+    sp::Shared<int> ptr2 = std::move(ptr1);
+    ASSERT_EQ(*ptr2, 5);
+    ASSERT_EQ(ptr1.count(), 0);
+    ASSERT_EQ(ptr2.count(), 1);
+  }
+
+  TEST_F(SharedTest, ReferenceCounting) {
+    {
+      sp::Shared<int> ptr1(new int(5));
+      {
+        sp::Shared<int> ptr2 = ptr1;
+        ASSERT_EQ(ptr1.count(), 2);
+        ASSERT_EQ(ptr2.count(), 2);
+      }
+      ASSERT_EQ(ptr1.count(), 1);
+    }
+  }
 #endif // TEST_SHARED
 
 #if TEST_WEAK
