@@ -24,6 +24,16 @@ namespace sp {
     }
 
     /**
+     * @brief Destructor
+     */
+    ~Weak() {
+      // No need to delete the pointer as it is managed by Shared
+      // Just set to nullptr to avoid dangling pointer
+      m_ptr = nullptr;
+      m_refCount = nullptr;
+    }
+
+    /**
      * @brief Copy constructor
      */
     Weak(const Weak& other) : m_ptr(other.m_ptr), m_refCount(other.m_refCount) {
@@ -70,10 +80,19 @@ namespace sp {
      */
     Shared<T> lock() {
       if (m_refCount && *m_refCount > 0) {
-        return Shared<T>(m_ptr);
+        return Shared<T>(m_ptr, m_refCount); // Use the existing refCount
       } else {
         return Shared<T>();
       }
+    }
+
+    /**
+     * @brief Check if the Weak pointer is expired
+     *
+     * @return true if the Weak pointer is expired, false otherwise
+     */
+    bool expired() const {
+      return m_refCount == nullptr || *m_refCount == 0;
     }
 
   private:

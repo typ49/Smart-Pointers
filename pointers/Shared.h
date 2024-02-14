@@ -38,6 +38,14 @@ namespace sp
       }
     }
 
+    Shared(T *ptr, std::size_t *refCount) : m_refCount(refCount), m_ptr(ptr)
+    {
+      if (m_refCount)
+      {
+        (*m_refCount)++;
+      }
+    }
+
     /**
      * @brief Destructor
      */
@@ -182,6 +190,8 @@ namespace sp
     }
 
   private:
+    template <typename U>
+    friend class Weak;
     // implementation defined
     std::size_t *m_refCount;
     T *m_ptr;
