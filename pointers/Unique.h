@@ -84,7 +84,6 @@ namespace sp
     {
       return m_ptr != nullptr;
     }
-
   private:
     // implementation defined
     T *m_ptr;

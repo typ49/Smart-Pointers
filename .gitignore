@@ -1,3 +1,5 @@
 # Ignorer tout dans build sauf .gitkeep
 pointers/build/*
 !pointers/build/.gitkeep
+
+.vscode/*
