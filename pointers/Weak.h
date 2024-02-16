@@ -1,104 +1,98 @@
 #ifndef SP_WEAK_H
 #define SP_WEAK_H
 
-#include "Shared.h"
+#include "Shared.h" // Ensure this includes the updated Shared.h with BlockControl
 
 namespace sp {
 
-  /**
-   * @brief Smart weak pointer
-   */
-  template<typename T>
-  class Weak {
-  public:
-    /**
-     * @brief Default constructor
-     */
-    Weak() : m_ptr(nullptr), m_refCount(nullptr) {
-    }
+template<typename T>
+class Weak {
+public:
+  // Default constructor
+  Weak() : m_ptr(nullptr), m_block(nullptr) {}
 
-    /**
-     * @brief Constructor takes a Shared pointer
-     */
-    Weak(const Shared<T>& shared) : m_ptr(shared.m_ptr), m_refCount(shared.m_refCount) {
+  // Constructor takes a Shared pointer
+  Weak(const Shared<T>& shared) : m_ptr(shared.m_ptr), m_block(shared.m_block) {
+    if (m_block) {
+      ++(m_block->weakCount); // Increment the weak count
     }
+  }
 
-    /**
-     * @brief Destructor
-     */
-    ~Weak() {
-      // No need to delete the pointer as it is managed by Shared
-      // Just set to nullptr to avoid dangling pointer
-      m_ptr = nullptr;
-      m_refCount = nullptr;
+  // Destructor
+  ~Weak() {
+    releaseResources();
+  }
+
+  // Copy constructor
+  Weak(const Weak& other) : m_ptr(other.m_ptr), m_block(other.m_block) {
+    if (m_block) {
+      ++(m_block->weakCount);
     }
+  }
 
-    /**
-     * @brief Copy constructor
-     */
-    Weak(const Weak& other) : m_ptr(other.m_ptr), m_refCount(other.m_refCount) {
-    }
-
-    /**
-     * @brief Copy assignment operator
-     */
-    Weak& operator=(const Weak& other) {
-      if (this != &other) {
-        m_ptr = other.m_ptr;
-        m_refCount = other.m_refCount;
+  // Copy assignment operator
+  Weak& operator=(const Weak& other) {
+    if (this != &other) {
+      releaseResources();
+      m_ptr = other.m_ptr;
+      m_block = other.m_block;
+      if (m_block) {
+        ++(m_block->weakCount);
       }
-      return *this;
     }
+    return *this;
+  }
 
-    /**
-     * @brief Move constructor
-     */
-    Weak(Weak&& other) noexcept : m_ptr(other.m_ptr), m_refCount(other.m_refCount) {
+  // Move constructor
+  Weak(Weak&& other) noexcept : m_ptr(other.m_ptr), m_block(other.m_block) {
+    other.m_ptr = nullptr;
+    other.m_block = nullptr;
+  }
+
+  // Move assignment operator
+  Weak& operator=(Weak&& other) noexcept {
+    if (this != &other) {
+      releaseResources();
+      m_ptr = other.m_ptr;
+      m_block = other.m_block;
       other.m_ptr = nullptr;
-      other.m_refCount = nullptr;
+      other.m_block = nullptr;
     }
+    return *this;
+  }
 
-    /**
-     * @brief Move assignment operator
-     */
-    Weak& operator=(Weak&& other) noexcept {
-      if (this != &other) {
-        m_ptr = other.m_ptr;
-        m_refCount = other.m_refCount;
-        other.m_ptr = nullptr;
-        other.m_refCount = nullptr;
-      }
-      return *this;
-    }
-
-    /**
-     * @brief Get a Shared pointer from the Weak pointer
-     *
-     * If the raw pointer still exists, the method
-     * initialize a Shared object. Otherwise, the method
-     * return a non existing Shared pointer.
-     */
-    Shared<T> lock() {
-      if (m_refCount && *m_refCount > 0) {
-        return Shared<T>(m_ptr, m_refCount); // Use the existing refCount
-      } else {
+  // Get a Shared pointer from the Weak pointer
+  Shared<T> lock() {
+    if (m_block && m_block->refCount > 0) {
+        // Using a private constructor of Shared that accepts (T*, BlockControl*)
+        return Shared<T>(m_ptr, m_block);
+    } else {
         return Shared<T>();
-      }
     }
+}
 
-    /**
-     * @brief Check if the Weak pointer is expired
-     *
-     * @return true if the Weak pointer is expired, false otherwise
-     */
-    bool expired() const {
-      return m_refCount == nullptr || *m_refCount == 0;
+  // Check if the Weak pointer is expired
+  bool expired() const {
+    return m_block == nullptr || m_block->refCount == 0;
+  }
+
+  void reset() {
+    releaseResources();
+  }
+  
+private:
+  T *m_ptr;
+  BlockControl *m_block;
+
+  void releaseResources() {
+    if (m_block && --(m_block->weakCount) == 0 && m_block->refCount == 0) {
+      delete m_block; // Delete the BlockControl if both refCount and weakCount are 0
     }
-
-  private:
-    T *m_ptr;
-    std::size_t *m_refCount;
-  };
+    m_ptr = nullptr;
+    m_block = nullptr;
+  }
 };
+
+} // namespace sp
 
 #endif // SP_WEAK_H

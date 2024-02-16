@@ -22,27 +22,27 @@ TEST(UniqueTest, EmptyConstructionTest)
 
 TEST(UniqueTest, ConstructionTest)
 {
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
+    sp::Unique<int> uniquePtr = sp::Unique<int>::makeUnique<int>(42);
     EXPECT_TRUE(uniquePtr);
 }
 
 TEST(UniqueTest, DereferenceTest)
 {
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
+    sp::Unique<int> uniquePtr = sp::Unique<int>::makeUnique<int>(42);
     EXPECT_EQ(*uniquePtr, 42);
     EXPECT_TRUE(uniquePtr);
 }
 
 TEST(UniqueTest, ModificationTest)
 {
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
+    sp::Unique<int> uniquePtr = sp::Unique<int>::makeUnique<int>(42);
     *uniquePtr = 69;
     EXPECT_EQ(*uniquePtr, 69u);
 }
 
 TEST(UniqueTest, MoveConstructionTest)
 {
-    sp::Unique<int> original = sp::makeUnique<int>(42);
+    sp::Unique<int> original = sp::Unique<int>::makeUnique<int>(42);
     sp::Unique<int> moved(std::move(original));
     EXPECT_FALSE(original);
     EXPECT_EQ(*moved, 42);
@@ -50,7 +50,7 @@ TEST(UniqueTest, MoveConstructionTest)
 
 TEST(UniqueTest, MoveAssignmentTest)
 {
-    sp::Unique<int> original = sp::makeUnique<int>(42);
+    sp::Unique<int> original = sp::Unique<int>::makeUnique<int>(42);
     sp::Unique<int> moved = std::move(original);
     EXPECT_TRUE(original.get() == nullptr);
     EXPECT_EQ(*moved, 42);
@@ -58,7 +58,7 @@ TEST(UniqueTest, MoveAssignmentTest)
 
 TEST(UniqueTest, NullptrAssignmentTest)
 {
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
+    sp::Unique<int> uniquePtr = sp::Unique<int>::makeUnique<int>(42);
     uniquePtr = nullptr; // this is using the move-assignment method !
     EXPECT_FALSE(uniquePtr);
 }
@@ -72,7 +72,7 @@ TEST(UniqueTest, GetTest)
 
 TEST(UniqueTest, ResetTest)
 {
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
+    sp::Unique<int> uniquePtr = sp::Unique<int>::makeUnique<int>(42);
     uniquePtr.reset();
     EXPECT_FALSE(uniquePtr);
 }
@@ -88,7 +88,7 @@ TEST(SharedTest, EmptyConstructionTest)
 
 TEST(SharedTest, ConstructionTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     EXPECT_TRUE(sharedPtr);
     EXPECT_EQ(sharedPtr.count(), 1u);
     EXPECT_EQ(*sharedPtr, 42u);
@@ -96,14 +96,14 @@ TEST(SharedTest, ConstructionTest)
 
 TEST(SharedTest, ModificationTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     *sharedPtr = 69;
     EXPECT_EQ(*sharedPtr, 69u);
 }
 
 TEST(SharedTest, CopyConstructionTest)
 {
-    sp::Shared<int> original = sp::makeShared<int>(42);
+    sp::Shared<int> original = sp::Shared<int>::makeShared<int>(42);
     sp::Shared<int> copy(original);
     EXPECT_EQ(original.count(), 2u);
     EXPECT_EQ(copy.count(), 2u);
@@ -115,7 +115,7 @@ TEST(SharedTest, CopyConstructionTest)
 
 TEST(SharedTest, CopyAssignmentTest)
 {
-    sp::Shared<int> original = sp::makeShared<int>(42);
+    sp::Shared<int> original = sp::Shared<int>::makeShared<int>(42);
     sp::Shared<int> copy;
     copy = original;
     EXPECT_TRUE(original);
@@ -131,7 +131,7 @@ TEST(SharedTest, CopyAssignmentTest)
 
 TEST(SharedTest, MoveConstructionTest)
 {
-    sp::Shared<int> original = sp::makeShared<int>(42);
+    sp::Shared<int> original = sp::Shared<int>::makeShared<int>(42);
     sp::Shared<int> moved(std::move(original));
     EXPECT_FALSE(original);
     EXPECT_TRUE(moved);
@@ -141,8 +141,8 @@ TEST(SharedTest, MoveConstructionTest)
 
 TEST(SharedTest, MoveAssignmentTest)
 {
-    sp::Shared<int> sharedPtr1 = sp::makeShared<int>(42);
-    sp::Shared<int> sharedPtr2 = sp::makeShared<int>(69);
+    sp::Shared<int> sharedPtr1 = sp::Shared<int>::makeShared<int>(42);
+    sp::Shared<int> sharedPtr2 = sp::Shared<int>::makeShared<int>(69);
     sharedPtr2 = std::move(sharedPtr1);
     EXPECT_FALSE(sharedPtr1);
     EXPECT_TRUE(sharedPtr2);
@@ -153,14 +153,14 @@ TEST(SharedTest, MoveAssignmentTest)
 
 TEST(SharedTest, NullptrAssignmentTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sharedPtr = nullptr;
     EXPECT_FALSE(sharedPtr);
 }
 
 TEST(SharedTest, CountTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     {
         sp::Shared<int> copy(sharedPtr);
         EXPECT_EQ(sharedPtr.count(), 2u);
@@ -178,7 +178,7 @@ TEST(SharedTest, GetTest)
 
 TEST(SharedTest, ResetTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sharedPtr.reset();
     EXPECT_FALSE(sharedPtr);
 }
@@ -195,7 +195,7 @@ TEST(WeakTest, EmptyConstructionTest)
 
 TEST(WeakTest, ConstructionFromSharedTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     sp::Shared<int> lockedPtr = weakPtr.lock();
     EXPECT_TRUE(lockedPtr);
@@ -205,7 +205,7 @@ TEST(WeakTest, ConstructionFromSharedTest)
 
 TEST(WeakTest, CountTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     {
         sp::Shared<int> sharedPtrLocked = weakPtr.lock();
@@ -216,7 +216,7 @@ TEST(WeakTest, CountTest)
 
 TEST(WeakTest, CopyConstructionTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     sp::Weak<int> weakPtrCopy(weakPtr);
     sp::Shared<int> lockedPtrCopy = weakPtrCopy.lock();
@@ -227,7 +227,7 @@ TEST(WeakTest, CopyConstructionTest)
 
 TEST(WeakTest, CopyAssignmentTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     sp::Weak<int> weakPtrCopy;
     weakPtrCopy = weakPtr;
@@ -239,7 +239,7 @@ TEST(WeakTest, CopyAssignmentTest)
 
 TEST(WeakTest, MoveConstructionTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(std::move(sharedPtr));
     sp::Shared<int> lockedPtr = weakPtr.lock();
     EXPECT_TRUE(lockedPtr);
@@ -249,7 +249,7 @@ TEST(WeakTest, MoveConstructionTest)
 
 TEST(WeakTest, MoveAssignmentTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr;
     weakPtr = std::move(sharedPtr);
     sp::Shared<int> lockedPtr = weakPtr.lock();
@@ -260,7 +260,7 @@ TEST(WeakTest, MoveAssignmentTest)
 
 TEST(WeakTest, LockTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     sp::Shared<int> lockedPtr = weakPtr.lock();
     EXPECT_TRUE(lockedPtr);
@@ -270,7 +270,7 @@ TEST(WeakTest, LockTest)
 
 TEST(WeakTest, LockAfterDestructionTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     sharedPtr = nullptr;
     sp::Shared<int> lockedPtr = weakPtr.lock();
@@ -279,7 +279,7 @@ TEST(WeakTest, LockAfterDestructionTest)
 
 TEST(WeakTest, ResetTest)
 {
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+    sp::Shared<int> sharedPtr = sp::Shared<int>::makeShared<int>(42);
     sp::Weak<int> weakPtr(sharedPtr);
     weakPtr.reset();
     sp::Shared<int> lockedPtr = weakPtr.lock();

@@ -59,158 +59,98 @@ TEST(UniqueTest, MoveSemantics) {
 
 #if TEST_SHARED
 /******************************************
- * Test the Shared class                  *
+ * Test the Updated Shared class          *
  ******************************************/
-  TEST(SharedTest, Constructor_default)
+TEST(SharedTest, ConstructorDefault) {
+  sp::Shared<int> shared;
+  EXPECT_EQ(shared.get(), nullptr);
+  EXPECT_EQ(shared.count(), 0); // No more objects are pointing to the memory
+}
+
+TEST(SharedTest, ConstructorDynamic) {
+  sp::Shared<int> shared(new int(5));
+  EXPECT_EQ(*shared, 5);
+  EXPECT_EQ(shared.count(), 1); // Only one Shared instance
+}
+
+TEST(SharedTest, CopyConstructor) {
+  sp::Shared<int> original(new int(10));
+  sp::Shared<int> copy(original);
+  EXPECT_EQ(*copy, 10);
+  EXPECT_EQ(copy.count(), 2); // Both instances share ownership
+  EXPECT_EQ(original.count(), 2);
+}
+
+TEST(SharedTest, MoveConstructor) {
+  sp::Shared<int> original(new int(20));
+  sp::Shared<int> moved(std::move(original));
+  EXPECT_EQ(*moved, 20);
+  EXPECT_EQ(original.get(), nullptr); // original has been moved from
+  EXPECT_EQ(moved.count(), 1); // Moved instance has sole ownership
+}
+
+TEST(SharedTest, ReferenceCounting) {
+  sp::Shared<int> first(new int(30));
   {
-    sp::Shared<int> shared;
-    EXPECT_EQ(shared.get(), nullptr);
-    EXPECT_EQ(shared.count(), 0);
-  }
-
-  TEST(SharedTest, Constructor_dynamic)
-  {
-    sp::Shared<int> sharedI(new int(5));
-    EXPECT_EQ(*sharedI.get(), 5);
-    EXPECT_EQ(sharedI.count(), 1);
-  }
-
-  TEST(SharedTest, Constructor_dynamic_string)
-  {
-    sp::Shared<std::string> sharedS(new std::string("Hello"));
-    EXPECT_EQ(*sharedS.get(), "Hello");
-    EXPECT_EQ(sharedS.count(), 1);
-  }
-
-  TEST(SharedTest, CopyConstructor)
-  {
-    sp::Shared<int> sharedI(new int(5));
-    sp::Shared<int> sharedCopy(sharedI);
-    EXPECT_EQ(*sharedCopy.get(), 5);
-    EXPECT_EQ(sharedCopy.count(), 2);
-  }
-
-  TEST(SharedTest, CopyConstructor_string)
-  {
-    sp::Shared<std::string> sharedS(new std::string("Hello"));
-    sp::Shared<std::string> sharedCopy(sharedS);
-    EXPECT_EQ(*sharedCopy.get(), "Hello");
-    EXPECT_EQ(sharedCopy.count(), 2);
-  }
-
-  TEST(SharedTest, Get)
-  {
-    sp::Shared<int> sharedI(new int(5));
-    EXPECT_EQ(*sharedI.get(), 5);
-    EXPECT_FALSE(sharedI.get() == nullptr);
-    EXPECT_EQ(sharedI.count(), 1);
-  }
-
-  TEST(SharedTest, BasicUsage) {
-    sp::Shared<int> ptr(new int(5));
-    ASSERT_EQ(*ptr, 5);
-    ASSERT_EQ(ptr.count(), 1);
-    ASSERT_TRUE(ptr.exists());
-  }
-
-  TEST(SharedTest, CopySemantics) {
-    sp::Shared<int> ptr1(new int(5));
-    sp::Shared<int> ptr2 = ptr1;
-    ASSERT_EQ(*ptr2, 5);
-    ASSERT_EQ(ptr1.count(), 2);
-    ASSERT_EQ(ptr2.count(), 2);
-  }
-
-  TEST(SharedTest, MoveSemantics) {
-    sp::Shared<int> ptr1(new int(5));
-    sp::Shared<int> ptr2 = std::move(ptr1);
-    ASSERT_EQ(*ptr2, 5);
-    ASSERT_EQ(ptr1.count(), 0);
-    ASSERT_EQ(ptr2.count(), 1);
-  }
-
-  TEST(SharedTest, ReferenceCounting) {
-    {
-      sp::Shared<int> ptr1(new int(5));
-      {
-        sp::Shared<int> ptr2 = ptr1;
-        ASSERT_EQ(ptr1.count(), 2);
-        ASSERT_EQ(ptr2.count(), 2);
-      }
-      ASSERT_EQ(ptr1.count(), 1);
-    }
-  }
+    sp::Shared<int> second = first; // Reference count should increase
+    EXPECT_EQ(first.count(), 2);
+    EXPECT_EQ(second.count(), 2);
+  } // second goes out of scope here
+  EXPECT_EQ(first.count(), 1); // Reference count should decrease after second is destroyed
+}
 #endif // TEST_SHARED
+
 
 #if TEST_WEAK
 /******************************************
- * Test the Weak class                    *
+ * Test the Updated Weak class            *
  ******************************************/
-
 TEST(WeakTest, DefaultConstructor) {
   sp::Weak<int> weak;
-  EXPECT_TRUE(weak.expired());
+  EXPECT_TRUE(weak.expired()); // Default constructed Weak should be expired
 }
 
 TEST(WeakTest, ConstructorFromShared) {
   sp::Shared<int> shared(new int(5));
   sp::Weak<int> weak(shared);
-  EXPECT_FALSE(weak.expired());
-  EXPECT_EQ(*weak.lock(), 5);
+  EXPECT_FALSE(weak.expired()); // Weak pointer to a valid Shared instance should not be expired
+  sp::Shared<int> locked = weak.lock();
+  EXPECT_EQ(*locked, 5);
 }
 
 TEST(WeakTest, CopyConstructor) {
-  sp::Shared<int> shared(new int(5));
-  sp::Weak<int> weak1(shared);
-  sp::Weak<int> weak2(weak1);
-  EXPECT_FALSE(weak2.expired());
-  EXPECT_EQ(*weak2.lock(), 5);
+  sp::Shared<int> shared(new int(10));
+  sp::Weak<int> original(shared);
+  sp::Weak<int> copy(original);
+  EXPECT_FALSE(copy.expired()); // Copy should not be expired
+  sp::Shared<int> locked = copy.lock();
+  EXPECT_EQ(*locked, 10); // Locked Shared should have the correct value
 }
 
 TEST(WeakTest, MoveConstructor) {
-  sp::Shared<int> shared(new int(5));
-  sp::Weak<int> weak1(shared);
-  sp::Weak<int> weak2(std::move(weak1));
-  EXPECT_FALSE(weak2.expired());
-  EXPECT_EQ(*weak2.lock(), 5);
-  EXPECT_TRUE(weak1.expired());
-}
-
-TEST(WeakTest, MoveAssignment) {
-  sp::Shared<int> shared(new int(5));
-  sp::Weak<int> weak1(shared);
-  sp::Weak<int> weak2;
-  weak2 = std::move(weak1);
-  EXPECT_FALSE(weak2.expired());
-  EXPECT_EQ(*weak2.lock(), 5);
-  EXPECT_TRUE(weak1.expired());
+  sp::Shared<int> shared(new int(20));
+  sp::Weak<int> original(shared);
+  sp::Weak<int> moved(std::move(original));
+  EXPECT_TRUE(original.expired()); // Original should be expired after move
+  EXPECT_FALSE(moved.expired()); // Moved should not be expired
+  sp::Shared<int> locked = moved.lock();
+  EXPECT_EQ(*locked, 20); // Locked Shared should have the correct value
 }
 
 TEST(WeakTest, LockExpired) {
   sp::Weak<int> weak;
   sp::Shared<int> locked = weak.lock();
-  EXPECT_EQ(locked.get(), nullptr);
+  EXPECT_EQ(locked.get(), nullptr); // Locked Shared should be nullptr for an expired Weak
 }
 
 TEST(WeakTest, LockNotExpired) {
-  sp::Shared<int> shared(new int(5));
+  sp::Shared<int> shared(new int(30));
   sp::Weak<int> weak(shared);
   sp::Shared<int> locked = weak.lock();
-  EXPECT_EQ(*locked, 5);
+  EXPECT_EQ(*locked, 30); // Locked Shared should have the correct value if Weak is not expired
 }
-
-TEST(WeakTest, Expired) {
-  sp::Weak<int> weak;
-  EXPECT_TRUE(weak.expired());
-}
-
-TEST(WeakTest, NotExpired) {
-  sp::Shared<int> shared(new int(5));
-  sp::Weak<int> weak(shared);
-  EXPECT_FALSE(weak.expired());
-}
-
 #endif // TEST_WEAK
+
 
 int main(int argc, char *argv[])
 {

@@ -27,14 +27,14 @@ namespace sp
       delete m_ptr;
     }
 
-    Unique(const Unique&) = delete;
-    Unique& operator=(const Unique&) = delete;
+    Unique(const Unique &) = delete;
+    Unique &operator=(const Unique &) = delete;
 
     /**
      * @brief Move constructor
      */
     Unique(Unique &&other) noexcept
-    : m_ptr(other.m_ptr)
+        : m_ptr(other.m_ptr)
     {
       other.m_ptr = nullptr;
     }
@@ -84,6 +84,29 @@ namespace sp
     {
       return m_ptr != nullptr;
     }
+
+    operator bool() const
+    {
+      return exists();
+    }
+
+    /**
+   * @brief make a unique pointer
+   *
+   * @note usage : sp::Unique<int> uniquePtr = sp::Unqiue<int>::makeUnique<int>(42);
+   */
+    template <typename... Args>
+    static Unique makeUnique(Args &&...args)
+    {
+      return Unique(new T(std::forward<Args>(args)...));
+    }
+
+    void reset()
+    {
+      delete m_ptr;
+      m_ptr = nullptr;
+    }
+
   private:
     // implementation defined
     T *m_ptr;
