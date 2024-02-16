@@ -1,11 +1,14 @@
+// Purpose: Test the Unique, Shared, and Weak pointer classes.
+
+// To compile and run separately the Unique, Shared, and Weak tests, use the following commands:
 #ifndef TEST_UNIQUE
-#define TEST_UNIQUE 1
+#define TEST_UNIQUE 1 // Set to 0 to disable Unique tests
 #endif // TEST_UNIQUE
 #ifndef TEST_SHARED
-#define TEST_SHARED 1
+#define TEST_SHARED 1 // Set to 0 to disable Shared tests
 #endif // TEST_SHARED
 #ifndef TEST_WEAK
-#define TEST_WEAK 1
+#define TEST_WEAK 1 // Set to 0 to disable Weak tests
 #endif // TEST_WEAK
 
 #include <gtest/gtest.h>

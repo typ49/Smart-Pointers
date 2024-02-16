@@ -86,6 +86,9 @@ namespace sp
       return m_ptr != nullptr;
     }
 
+    /**
+     * @brief Check if the raw pointer exists
+     */
     operator bool() const
     {
       return exists();
@@ -94,7 +97,7 @@ namespace sp
     /**
    * @brief make a unique pointer
    *
-   * @note usage : sp::Unique<int> uniquePtr = sp::Unqiue<int>::makeUnique<int>(42);
+   * @note usage : sp::Unique<T> uniquePtr = sp::Unqiue<T>::makeUnique<T>(*T);
    */
     template <typename... Args>
     static Unique makeUnique(Args &&...args)

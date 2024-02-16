@@ -9,6 +9,7 @@
 namespace sp
 {
 
+  // a struct to keep track of the reference count and weak count
   struct BlockControl
   {
     std::size_t refCount = 0;  // Count of Shared pointers
@@ -17,11 +18,18 @@ namespace sp
     BlockControl() : refCount(1), weakCount(0) {} // Initialize refCount to 1 for the first Shared pointer
   };
 
+  ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @brief Smart shared pointer
+   */
   template <typename T>
   class Shared
   {
   public:
-    // Adjusted constructor
+    /**
+     * @brief Constructor takes a dynamic pointer
+     */
     Shared(T *ptr = nullptr)
     {
       if (ptr)
@@ -95,11 +103,21 @@ namespace sp
       return *this;
     }
 
+    /**
+     * @brief Get the raw pointer
+     *
+     * @return T*
+     */
     T *get()
     {
       return m_ptr;
     }
 
+    /**
+     * @brief Get a reference on pointed data
+     *
+     * @return T&
+     */
     T &operator*()
     {
       if (m_ptr)
@@ -109,21 +127,41 @@ namespace sp
       throw std::runtime_error("Null pointer exception");
     }
 
+    /**
+     * @brief Get the raw pointer
+     *
+     * @return T*
+     */
     T *operator->()
     {
       return m_ptr;
     }
 
+    /**
+     * @brief Get the reference count
+     *
+     * @return std::size_t
+     */
     std::size_t count() const
     {
       return m_block ? m_block->refCount : 0;
     }
 
+    /**
+     * @brief Check if the raw pointer exists
+     *
+     * @return bool
+     */
     bool exists() const
     {
       return m_ptr != nullptr;
     }
 
+    /**
+     * @brief Check if the raw pointer exists
+     *
+     * @return bool
+     */
     operator bool() const
     {
       return exists();
@@ -131,15 +169,20 @@ namespace sp
 
     /**
      * @brief make a shared pointer
-     * 
-     * @note usage example: sp::Shared<int> uniquePtr = sp::Shared<int>::makeShared<int>(42);
-    */
+     *
+     * @note usage example: sp::Shared<T> uniquePtr = sp::Shared<T>::makeShared<T>(*T);
+     */
     template <typename... Args>
     static Shared makeShared(Args &&...args)
     {
       return Shared(new T(std::forward<Args>(args)...));
     }
 
+    /**
+     * @brief Get a weak pointer from the shared pointer
+     *
+     * @return Weak<T>
+     */
     void reset()
     {
       releaseResources();
@@ -149,10 +192,13 @@ namespace sp
 
   private:
     template <typename U>
-    friend class Weak;
+    friend class Weak; // Allow Weak to access private members
     BlockControl *m_block = nullptr;
     T *m_ptr = nullptr;
 
+    /**
+     * @brief Release the resources
+    */
     void releaseResources()
     {
       if (m_block && --(m_block->refCount) == 0)
@@ -165,10 +211,15 @@ namespace sp
       }
     }
 
-    Shared(T* ptr, BlockControl* block) : m_block(block), m_ptr(ptr) { 
-        if (m_block) {
-            ++m_block->refCount;
-        }
+    /**
+     * @brief Private constructor
+     */
+    Shared(T *ptr, BlockControl *block) : m_block(block), m_ptr(ptr)
+    {
+      if (m_block)
+      {
+        ++m_block->refCount;
+      }
     }
   };
 
