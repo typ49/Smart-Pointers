@@ -1,293 +1,219 @@
+#ifndef TEST_UNIQUE
+#define TEST_UNIQUE 1
+#endif // TEST_UNIQUE
+#ifndef TEST_SHARED
+#define TEST_SHARED 1
+#endif // TEST_SHARED
+#ifndef TEST_WEAK
+#define TEST_WEAK 1
+#endif // TEST_WEAK
+
 #include <gtest/gtest.h>
+
+#include <iostream>
 
 #include "Shared.h"
 #include "Weak.h"
 #include "Unique.h"
 
-TEST(test, test)
-{
+#if TEST_UNIQUE
+/******************************************
+ * Test the Unique class                  *
+ ******************************************/
+
+TEST(UniqueTest, MoveConstructor) {
+  sp::Unique<int> unique1(new int(5));
+  sp::Unique<int> unique2(std::move(unique1));
+  EXPECT_EQ(*unique2, 5);
+  EXPECT_EQ(unique1.get(), nullptr);
+}
+
+TEST(UniqueTest, MoveAssignment) {
+  sp::Unique<int> unique1(new int(5));
+  sp::Unique<int> unique2;
+  unique2 = std::move(unique1);
+  EXPECT_EQ(*unique2, 5);
+  EXPECT_EQ(unique1.get(), nullptr);
+}
+
+TEST(UniqueTest, NonCopyable) {
+  sp::Unique<int> unique1(new int(5));
+  // Uncommenting the following lines should cause a compile error
+  // sp::Unique<int> unique2(unique1);
+  // sp::Unique<int> unique3 = unique1;
+}
+
+TEST(UniqueTest, BasicUsage) {
+  sp::Unique<int> ptr(new int(5));
+  ASSERT_EQ(*ptr, 5);
+  ASSERT_TRUE(ptr.exists());
+}
+
+TEST(UniqueTest, MoveSemantics) {
+  sp::Unique<int> ptr1(new int(5));
+  sp::Unique<int> ptr2 = std::move(ptr1);
+  ASSERT_EQ(*ptr2, 5);
+  ASSERT_FALSE(ptr1.exists());
+}
+#endif // TEST_UNIQUE
+
+#if TEST_SHARED
+/******************************************
+ * Test the Shared class                  *
+ ******************************************/
+  TEST(SharedTest, Constructor_default)
+  {
     sp::Shared<int> shared;
-    sp::Weak<int> weak;
-    sp::Unique<int> unique;
-}
+    EXPECT_EQ(shared.get(), nullptr);
+    EXPECT_EQ(shared.count(), 0);
+  }
 
-//--- Test on unique pointers ---
+  TEST(SharedTest, Constructor_dynamic)
+  {
+    sp::Shared<int> sharedI(new int(5));
+    EXPECT_EQ(*sharedI.get(), 5);
+    EXPECT_EQ(sharedI.count(), 1);
+  }
 
-TEST(UniqueTest, EmptyConstructionTest)
-{
-    sp::Unique<int> uniquePtr;
-    EXPECT_FALSE(uniquePtr.exists());
-    EXPECT_FALSE(uniquePtr);
-}
+  TEST(SharedTest, Constructor_dynamic_string)
+  {
+    sp::Shared<std::string> sharedS(new std::string("Hello"));
+    EXPECT_EQ(*sharedS.get(), "Hello");
+    EXPECT_EQ(sharedS.count(), 1);
+  }
 
-TEST(UniqueTest, ConstructionTest)
-{
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
-    EXPECT_TRUE(uniquePtr);
-}
+  TEST(SharedTest, CopyConstructor)
+  {
+    sp::Shared<int> sharedI(new int(5));
+    sp::Shared<int> sharedCopy(sharedI);
+    EXPECT_EQ(*sharedCopy.get(), 5);
+    EXPECT_EQ(sharedCopy.count(), 2);
+  }
 
-TEST(UniqueTest, DereferenceTest)
-{
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
-    EXPECT_EQ(*uniquePtr, 42);
-    EXPECT_TRUE(uniquePtr);
-}
+  TEST(SharedTest, CopyConstructor_string)
+  {
+    sp::Shared<std::string> sharedS(new std::string("Hello"));
+    sp::Shared<std::string> sharedCopy(sharedS);
+    EXPECT_EQ(*sharedCopy.get(), "Hello");
+    EXPECT_EQ(sharedCopy.count(), 2);
+  }
 
-TEST(UniqueTest, ModificationTest)
-{
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
-    *uniquePtr = 69;
-    EXPECT_EQ(*uniquePtr, 69u);
-}
+  TEST(SharedTest, Get)
+  {
+    sp::Shared<int> sharedI(new int(5));
+    EXPECT_EQ(*sharedI.get(), 5);
+    EXPECT_FALSE(sharedI.get() == nullptr);
+    EXPECT_EQ(sharedI.count(), 1);
+  }
 
-TEST(UniqueTest, MoveConstructionTest)
-{
-    sp::Unique<int> original = sp::makeUnique<int>(42);
-    sp::Unique<int> moved(std::move(original));
-    EXPECT_FALSE(original);
-    EXPECT_EQ(*moved, 42);
-}
+  TEST(SharedTest, BasicUsage) {
+    sp::Shared<int> ptr(new int(5));
+    ASSERT_EQ(*ptr, 5);
+    ASSERT_EQ(ptr.count(), 1);
+    ASSERT_TRUE(ptr.exists());
+  }
 
-TEST(UniqueTest, MoveAssignmentTest)
-{
-    sp::Unique<int> original = sp::makeUnique<int>(42);
-    sp::Unique<int> moved = std::move(original);
-    EXPECT_TRUE(original.get() == nullptr);
-    EXPECT_EQ(*moved, 42);
-}
+  TEST(SharedTest, CopySemantics) {
+    sp::Shared<int> ptr1(new int(5));
+    sp::Shared<int> ptr2 = ptr1;
+    ASSERT_EQ(*ptr2, 5);
+    ASSERT_EQ(ptr1.count(), 2);
+    ASSERT_EQ(ptr2.count(), 2);
+  }
 
-TEST(UniqueTest, NullptrAssignmentTest)
-{
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
-    uniquePtr = nullptr; // this is using the move-assignment method !
-    EXPECT_FALSE(uniquePtr);
-}
+  TEST(SharedTest, MoveSemantics) {
+    sp::Shared<int> ptr1(new int(5));
+    sp::Shared<int> ptr2 = std::move(ptr1);
+    ASSERT_EQ(*ptr2, 5);
+    ASSERT_EQ(ptr1.count(), 0);
+    ASSERT_EQ(ptr2.count(), 1);
+  }
 
-TEST(UniqueTest, GetTest)
-{
-    int *rawPtr = new int(42);
-    sp::Unique<int> uniquePtr(rawPtr);
-    EXPECT_EQ(uniquePtr.get(), rawPtr);
-}
-
-TEST(UniqueTest, ResetTest)
-{
-    sp::Unique<int> uniquePtr = sp::makeUnique<int>(42);
-    uniquePtr.reset();
-    EXPECT_FALSE(uniquePtr);
-}
-
-//--- Test on shared pointers ---
-
-TEST(SharedTest, EmptyConstructionTest)
-{
-    sp::Shared<int> sharedPtr;
-    EXPECT_FALSE(sharedPtr.exists());
-    EXPECT_FALSE(sharedPtr);
-}
-
-TEST(SharedTest, ConstructionTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    EXPECT_TRUE(sharedPtr);
-    EXPECT_EQ(sharedPtr.count(), 1u);
-    EXPECT_EQ(*sharedPtr, 42u);
-}
-
-TEST(SharedTest, ModificationTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    *sharedPtr = 69;
-    EXPECT_EQ(*sharedPtr, 69u);
-}
-
-TEST(SharedTest, CopyConstructionTest)
-{
-    sp::Shared<int> original = sp::makeShared<int>(42);
-    sp::Shared<int> copy(original);
-    EXPECT_EQ(original.count(), 2u);
-    EXPECT_EQ(copy.count(), 2u);
-    EXPECT_EQ(*original, *copy);
-    *copy = 69;
-    EXPECT_EQ(*original, 69u);
-    EXPECT_EQ(*copy, 69u);
-}
-
-TEST(SharedTest, CopyAssignmentTest)
-{
-    sp::Shared<int> original = sp::makeShared<int>(42);
-    sp::Shared<int> copy;
-    copy = original;
-    EXPECT_TRUE(original);
-    EXPECT_TRUE(copy);
-    EXPECT_EQ(original.count(), 2u);
-    EXPECT_EQ(copy.count(), 2u);
-    EXPECT_EQ(*original, 42u);
-    EXPECT_EQ(*copy, 42u);
-    *copy = 69;
-    EXPECT_EQ(*original, 69u);
-    EXPECT_EQ(*copy, 69u);
-}
-
-TEST(SharedTest, MoveConstructionTest)
-{
-    sp::Shared<int> original = sp::makeShared<int>(42);
-    sp::Shared<int> moved(std::move(original));
-    EXPECT_FALSE(original);
-    EXPECT_TRUE(moved);
-    EXPECT_EQ(original.count(), 0u);
-    EXPECT_EQ(moved.count(), 1u);
-}
-
-TEST(SharedTest, MoveAssignmentTest)
-{
-    sp::Shared<int> sharedPtr1 = sp::makeShared<int>(42);
-    sp::Shared<int> sharedPtr2 = sp::makeShared<int>(69);
-    sharedPtr2 = std::move(sharedPtr1);
-    EXPECT_FALSE(sharedPtr1);
-    EXPECT_TRUE(sharedPtr2);
-    EXPECT_EQ(sharedPtr1.count(), 0u);
-    EXPECT_EQ(sharedPtr2.count(), 1u);
-    EXPECT_EQ(*sharedPtr2, 42u);
-}
-
-TEST(SharedTest, NullptrAssignmentTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sharedPtr = nullptr;
-    EXPECT_FALSE(sharedPtr);
-}
-
-TEST(SharedTest, CountTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
+  TEST(SharedTest, ReferenceCounting) {
     {
-        sp::Shared<int> copy(sharedPtr);
-        EXPECT_EQ(sharedPtr.count(), 2u);
-        EXPECT_EQ(copy.count(), 2u);
+      sp::Shared<int> ptr1(new int(5));
+      {
+        sp::Shared<int> ptr2 = ptr1;
+        ASSERT_EQ(ptr1.count(), 2);
+        ASSERT_EQ(ptr2.count(), 2);
+      }
+      ASSERT_EQ(ptr1.count(), 1);
     }
-    EXPECT_EQ(sharedPtr.count(), 1u);
+  }
+#endif // TEST_SHARED
+
+#if TEST_WEAK
+/******************************************
+ * Test the Weak class                    *
+ ******************************************/
+
+TEST(WeakTest, DefaultConstructor) {
+  sp::Weak<int> weak;
+  EXPECT_TRUE(weak.expired());
 }
 
-TEST(SharedTest, GetTest)
-{
-    int *rawPtr = new int(42);
-    sp::Shared<int> sharedPtr(rawPtr);
-    EXPECT_EQ(sharedPtr.get(), rawPtr);
+TEST(WeakTest, ConstructorFromShared) {
+  sp::Shared<int> shared(new int(5));
+  sp::Weak<int> weak(shared);
+  EXPECT_FALSE(weak.expired());
+  EXPECT_EQ(*weak.lock(), 5);
 }
 
-TEST(SharedTest, ResetTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sharedPtr.reset();
-    EXPECT_FALSE(sharedPtr);
+TEST(WeakTest, CopyConstructor) {
+  sp::Shared<int> shared(new int(5));
+  sp::Weak<int> weak1(shared);
+  sp::Weak<int> weak2(weak1);
+  EXPECT_FALSE(weak2.expired());
+  EXPECT_EQ(*weak2.lock(), 5);
 }
 
-//--- Test on weak pointers ---
-
-TEST(WeakTest, EmptyConstructionTest)
-{
-    sp::Weak<int> weakPtr;
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_FALSE(lockedPtr.exists());
-    EXPECT_FALSE(lockedPtr);
+TEST(WeakTest, MoveConstructor) {
+  sp::Shared<int> shared(new int(5));
+  sp::Weak<int> weak1(shared);
+  sp::Weak<int> weak2(std::move(weak1));
+  EXPECT_FALSE(weak2.expired());
+  EXPECT_EQ(*weak2.lock(), 5);
+  EXPECT_TRUE(weak1.expired());
 }
 
-TEST(WeakTest, ConstructionFromSharedTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_TRUE(lockedPtr);
-    EXPECT_EQ(lockedPtr.count(), 2u);
-    EXPECT_EQ(*lockedPtr, 42u);
+TEST(WeakTest, MoveAssignment) {
+  sp::Shared<int> shared(new int(5));
+  sp::Weak<int> weak1(shared);
+  sp::Weak<int> weak2;
+  weak2 = std::move(weak1);
+  EXPECT_FALSE(weak2.expired());
+  EXPECT_EQ(*weak2.lock(), 5);
+  EXPECT_TRUE(weak1.expired());
 }
 
-TEST(WeakTest, CountTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    {
-        sp::Shared<int> sharedPtrLocked = weakPtr.lock();
-        EXPECT_EQ(sharedPtrLocked.count(), 2u);
-    }
-    EXPECT_EQ(sharedPtr.count(), 1u);
+TEST(WeakTest, LockExpired) {
+  sp::Weak<int> weak;
+  sp::Shared<int> locked = weak.lock();
+  EXPECT_EQ(locked.get(), nullptr);
 }
 
-TEST(WeakTest, CopyConstructionTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    sp::Weak<int> weakPtrCopy(weakPtr);
-    sp::Shared<int> lockedPtrCopy = weakPtrCopy.lock();
-    EXPECT_TRUE(lockedPtrCopy);
-    EXPECT_EQ(lockedPtrCopy.count(), 2u);
-    EXPECT_EQ(*lockedPtrCopy, 42u);
+TEST(WeakTest, LockNotExpired) {
+  sp::Shared<int> shared(new int(5));
+  sp::Weak<int> weak(shared);
+  sp::Shared<int> locked = weak.lock();
+  EXPECT_EQ(*locked, 5);
 }
 
-TEST(WeakTest, CopyAssignmentTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    sp::Weak<int> weakPtrCopy;
-    weakPtrCopy = weakPtr;
-    sp::Shared<int> lockedPtrCopy = weakPtrCopy.lock();
-    EXPECT_TRUE(lockedPtrCopy);
-    EXPECT_EQ(lockedPtrCopy.count(), 2u);
-    EXPECT_EQ(*lockedPtrCopy, 42u);
+TEST(WeakTest, Expired) {
+  sp::Weak<int> weak;
+  EXPECT_TRUE(weak.expired());
 }
 
-TEST(WeakTest, MoveConstructionTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(std::move(sharedPtr));
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_TRUE(lockedPtr);
-    EXPECT_EQ(lockedPtr.count(), 2u);
-    EXPECT_EQ(*lockedPtr, 42u);
+TEST(WeakTest, NotExpired) {
+  sp::Shared<int> shared(new int(5));
+  sp::Weak<int> weak(shared);
+  EXPECT_FALSE(weak.expired());
 }
 
-TEST(WeakTest, MoveAssignmentTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr;
-    weakPtr = std::move(sharedPtr);
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_TRUE(lockedPtr);
-    EXPECT_EQ(lockedPtr.count(), 2u);
-    EXPECT_EQ(*lockedPtr, 42u);
-}
-
-TEST(WeakTest, LockTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_TRUE(lockedPtr);
-    EXPECT_EQ(lockedPtr.count(), 2u);
-    EXPECT_EQ(*lockedPtr, 42u);
-}
-
-TEST(WeakTest, LockAfterDestructionTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    sharedPtr = nullptr;
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_FALSE(lockedPtr);
-}
-
-TEST(WeakTest, ResetTest)
-{
-    sp::Shared<int> sharedPtr = sp::makeShared<int>(42);
-    sp::Weak<int> weakPtr(sharedPtr);
-    weakPtr.reset();
-    sp::Shared<int> lockedPtr = weakPtr.lock();
-    EXPECT_FALSE(lockedPtr);
-}
+#endif // TEST_WEAK
 
 int main(int argc, char *argv[])
 {
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
