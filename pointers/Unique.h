@@ -20,17 +20,6 @@ namespace sp
     }
 
     /**
-     * @brief Destructor
-     */
-    ~Unique()
-    {
-      delete m_ptr;
-    }
-
-    Unique(const Unique &) = delete;
-    Unique &operator=(const Unique &) = delete;
-
-    /**
      * @brief Move constructor
      */
     Unique(Unique &&other) noexcept
@@ -52,6 +41,18 @@ namespace sp
       }
       return *this;
     }
+
+    /**
+     * @brief Destructor
+     */
+    ~Unique()
+    {
+      delete m_ptr;
+    }
+
+    // Non-copyable
+    Unique(const Unique &) = delete;
+    Unique &operator=(const Unique &) = delete;
 
     /**
      * @brief Get the raw pointer
