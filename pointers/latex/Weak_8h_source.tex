@@ -1,0 +1,115 @@
+\hypertarget{Weak_8h_source}{}\doxysection{Weak.\+h}
+
+\begin{DoxyCode}{0}
+\DoxyCodeLine{1 \textcolor{preprocessor}{\#ifndef SP\_WEAK\_H}}
+\DoxyCodeLine{2 \textcolor{preprocessor}{\#define SP\_WEAK\_H}}
+\DoxyCodeLine{3 }
+\DoxyCodeLine{4 \textcolor{preprocessor}{\#include "{}Shared.h"{}} \textcolor{comment}{// Ensure this includes the updated Shared.h with BlockControl}}
+\DoxyCodeLine{5 }
+\DoxyCodeLine{6 \textcolor{keyword}{namespace }sp}
+\DoxyCodeLine{7 \{}
+\DoxyCodeLine{8 }
+\DoxyCodeLine{12   \textcolor{keyword}{template} <\textcolor{keyword}{typename} T>}
+\DoxyCodeLine{13   \textcolor{keyword}{class }\mbox{\hyperlink{classsp_1_1Weak}{Weak}}}
+\DoxyCodeLine{14   \{}
+\DoxyCodeLine{15   \textcolor{keyword}{public}:}
+\DoxyCodeLine{19     \mbox{\hyperlink{classsp_1_1Weak_acb1af4060ec1a93a875e809effe761aa}{Weak}}() : m\_ptr(nullptr), m\_block(nullptr) \{\}}
+\DoxyCodeLine{20 }
+\DoxyCodeLine{25     \mbox{\hyperlink{classsp_1_1Weak_aecd28e734e4041240f3cac33fba3977e}{Weak}}(\textcolor{keyword}{const} \mbox{\hyperlink{classsp_1_1Shared}{Shared<T>}} \&shared) : m\_ptr(shared.m\_ptr), m\_block(shared.m\_block)}
+\DoxyCodeLine{26     \{}
+\DoxyCodeLine{27       \textcolor{keywordflow}{if} (m\_block)}
+\DoxyCodeLine{28       \{}
+\DoxyCodeLine{29         ++(m\_block-\/>weakCount); \textcolor{comment}{// Increment the weak count}}
+\DoxyCodeLine{30       \}}
+\DoxyCodeLine{31     \}}
+\DoxyCodeLine{32 }
+\DoxyCodeLine{36     \mbox{\hyperlink{classsp_1_1Weak_a8caf2ae5d39fb2c1c3ebdbdf0a3d944b}{\string~Weak}}()}
+\DoxyCodeLine{37     \{}
+\DoxyCodeLine{38       releaseResources();}
+\DoxyCodeLine{39     \}}
+\DoxyCodeLine{40 }
+\DoxyCodeLine{45     \mbox{\hyperlink{classsp_1_1Weak_ac091e42daf54eeeadba9054cbb4a5bb5}{Weak}}(\textcolor{keyword}{const} \mbox{\hyperlink{classsp_1_1Weak}{Weak}} \&other) : m\_ptr(other.m\_ptr), m\_block(other.m\_block)}
+\DoxyCodeLine{46     \{}
+\DoxyCodeLine{47       \textcolor{keywordflow}{if} (m\_block)}
+\DoxyCodeLine{48       \{}
+\DoxyCodeLine{49         ++(m\_block-\/>weakCount);}
+\DoxyCodeLine{50       \}}
+\DoxyCodeLine{51     \}}
+\DoxyCodeLine{52 }
+\DoxyCodeLine{58     \mbox{\hyperlink{classsp_1_1Weak}{Weak}} \&\mbox{\hyperlink{classsp_1_1Weak_ab6a34ae78282e05d0aa5892944206ce4}{operator=}}(\textcolor{keyword}{const} \mbox{\hyperlink{classsp_1_1Weak}{Weak}} \&other)}
+\DoxyCodeLine{59     \{}
+\DoxyCodeLine{60       \textcolor{keywordflow}{if} (\textcolor{keyword}{this} != \&other)}
+\DoxyCodeLine{61       \{}
+\DoxyCodeLine{62         releaseResources();}
+\DoxyCodeLine{63         m\_ptr = other.m\_ptr;}
+\DoxyCodeLine{64         m\_block = other.m\_block;}
+\DoxyCodeLine{65         \textcolor{keywordflow}{if} (m\_block)}
+\DoxyCodeLine{66         \{}
+\DoxyCodeLine{67           ++(m\_block-\/>weakCount);}
+\DoxyCodeLine{68         \}}
+\DoxyCodeLine{69       \}}
+\DoxyCodeLine{70       \textcolor{keywordflow}{return} *\textcolor{keyword}{this};}
+\DoxyCodeLine{71     \}}
+\DoxyCodeLine{72 }
+\DoxyCodeLine{77     \mbox{\hyperlink{classsp_1_1Weak_afdc57d19785892c72f4829b5b8c981df}{Weak}}(\mbox{\hyperlink{classsp_1_1Weak}{Weak}} \&\&other) noexcept : m\_ptr(other.m\_ptr), m\_block(other.m\_block)}
+\DoxyCodeLine{78     \{}
+\DoxyCodeLine{79       other.m\_ptr = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{80       other.m\_block = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{81     \}}
+\DoxyCodeLine{82 }
+\DoxyCodeLine{88     \mbox{\hyperlink{classsp_1_1Weak}{Weak}} \&\mbox{\hyperlink{classsp_1_1Weak_a726cc10d32a64f7cee460a08607c45e1}{operator=}}(\mbox{\hyperlink{classsp_1_1Weak}{Weak}} \&\&other) \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{89     \{}
+\DoxyCodeLine{90       \textcolor{keywordflow}{if} (\textcolor{keyword}{this} != \&other)}
+\DoxyCodeLine{91       \{}
+\DoxyCodeLine{92         releaseResources();}
+\DoxyCodeLine{93         m\_ptr = other.m\_ptr;}
+\DoxyCodeLine{94         m\_block = other.m\_block;}
+\DoxyCodeLine{95         other.m\_ptr = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{96         other.m\_block = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{97       \}}
+\DoxyCodeLine{98       \textcolor{keywordflow}{return} *\textcolor{keyword}{this};}
+\DoxyCodeLine{99     \}}
+\DoxyCodeLine{100 }
+\DoxyCodeLine{105     \mbox{\hyperlink{classsp_1_1Shared}{Shared<T>}} \mbox{\hyperlink{classsp_1_1Weak_af5dda04aeaed630d39e80758fecfdb5d}{lock}}()}
+\DoxyCodeLine{106     \{}
+\DoxyCodeLine{107       \textcolor{keywordflow}{if} (m\_block \&\& m\_block-\/>refCount > 0)}
+\DoxyCodeLine{108       \{}
+\DoxyCodeLine{109         \textcolor{comment}{// Using a private constructor of Shared that accepts (T*, BlockControl*)}}
+\DoxyCodeLine{110         \textcolor{keywordflow}{return} \mbox{\hyperlink{classsp_1_1Shared}{Shared<T>}}(m\_ptr, m\_block);}
+\DoxyCodeLine{111       \}}
+\DoxyCodeLine{112       \textcolor{keywordflow}{else}}
+\DoxyCodeLine{113       \{}
+\DoxyCodeLine{114         \textcolor{keywordflow}{return} \mbox{\hyperlink{classsp_1_1Shared}{Shared<T>}}();}
+\DoxyCodeLine{115       \}}
+\DoxyCodeLine{116     \}}
+\DoxyCodeLine{117 }
+\DoxyCodeLine{122     \textcolor{keywordtype}{bool} \mbox{\hyperlink{classsp_1_1Weak_a04fc92f3f4a7f94aa5ccabc66d2f8a73}{expired}}()\textcolor{keyword}{ const}}
+\DoxyCodeLine{123 \textcolor{keyword}{    }\{}
+\DoxyCodeLine{124       \textcolor{keywordflow}{return} m\_block == \textcolor{keyword}{nullptr} || m\_block-\/>refCount == 0;}
+\DoxyCodeLine{125     \}}
+\DoxyCodeLine{126 }
+\DoxyCodeLine{130     \textcolor{keywordtype}{void} \mbox{\hyperlink{classsp_1_1Weak_afdc06815be187b6566be341f79015c54}{reset}}()}
+\DoxyCodeLine{131     \{}
+\DoxyCodeLine{132       releaseResources();}
+\DoxyCodeLine{133     \}}
+\DoxyCodeLine{134 }
+\DoxyCodeLine{135   \textcolor{keyword}{private}:}
+\DoxyCodeLine{136     T *m\_ptr; }
+\DoxyCodeLine{137     \mbox{\hyperlink{structsp_1_1BlockControl}{BlockControl}} *m\_block; }
+\DoxyCodeLine{138 }
+\DoxyCodeLine{142     \textcolor{keywordtype}{void} releaseResources()}
+\DoxyCodeLine{143     \{}
+\DoxyCodeLine{144       \textcolor{keywordflow}{if} (m\_block \&\& -\/-\/(m\_block-\/>weakCount) == 0 \&\& m\_block-\/>refCount == 0)}
+\DoxyCodeLine{145       \{}
+\DoxyCodeLine{146         \textcolor{keyword}{delete} m\_block; \textcolor{comment}{// Delete the BlockControl if both refCount and weakCount are 0}}
+\DoxyCodeLine{147       \}}
+\DoxyCodeLine{148       m\_ptr = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{149       m\_block = \textcolor{keyword}{nullptr};}
+\DoxyCodeLine{150     \}}
+\DoxyCodeLine{151   \};}
+\DoxyCodeLine{152 }
+\DoxyCodeLine{153 \} \textcolor{comment}{// namespace sp}}
+\DoxyCodeLine{154 }
+\DoxyCodeLine{155 \textcolor{preprocessor}{\#endif }\textcolor{comment}{// SP\_WEAK\_H}}
+
+\end{DoxyCode}

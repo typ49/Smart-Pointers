@@ -1,0 +1,207 @@
+\hypertarget{classsp_1_1Unique}{}\doxysection{sp\+::Unique\texorpdfstring{$<$}{<} T \texorpdfstring{$>$}{>} Class Template Reference}
+\label{classsp_1_1Unique}\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+
+
+Smart unique pointer.  
+
+
+
+
+{\ttfamily \#include $<$Unique.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classsp_1_1Unique_a46a87b2ffd726eafc6838ac467a3853a}{Unique}} (T $\ast$ptr=nullptr)
+\begin{DoxyCompactList}\small\item\em Constructor takes a dynamic pointer. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsp_1_1Unique_af13c2e5321b0c3457c2bd78074ca6801}{Unique}} (\mbox{\hyperlink{classsp_1_1Unique}{Unique}} \&\&other) noexcept
+\begin{DoxyCompactList}\small\item\em Move constructor. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsp_1_1Unique}{Unique}} \& \mbox{\hyperlink{classsp_1_1Unique_a6d360dc7fb6efc508d21d96224f9414a}{operator=}} (\mbox{\hyperlink{classsp_1_1Unique}{Unique}} \&\&other) noexcept
+\begin{DoxyCompactList}\small\item\em Move assignment operator. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsp_1_1Unique_a522b746bfaa4b4a28ab03d38097ec6fd}\label{classsp_1_1Unique_a522b746bfaa4b4a28ab03d38097ec6fd}} 
+{\bfseries $\sim$\+Unique} ()
+\begin{DoxyCompactList}\small\item\em Destructor releases resources if necessary. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsp_1_1Unique_a3abf80d484438edc0929a95ca51627b2}\label{classsp_1_1Unique_a3abf80d484438edc0929a95ca51627b2}} 
+{\bfseries Unique} (const \mbox{\hyperlink{classsp_1_1Unique}{Unique}} \&)=delete
+\item 
+\mbox{\Hypertarget{classsp_1_1Unique_acdc1a425a32b138f17cda84bb6cad072}\label{classsp_1_1Unique_acdc1a425a32b138f17cda84bb6cad072}} 
+\mbox{\hyperlink{classsp_1_1Unique}{Unique}} \& {\bfseries operator=} (const \mbox{\hyperlink{classsp_1_1Unique}{Unique}} \&)=delete
+\item 
+T $\ast$ \mbox{\hyperlink{classsp_1_1Unique_a9fbc14f393bfd14e674752c07a8f3e6a}{get}} ()
+\begin{DoxyCompactList}\small\item\em Get the raw pointer. \end{DoxyCompactList}\item 
+T \& \mbox{\hyperlink{classsp_1_1Unique_a99e6501b1bad370ca04899e9fa9da0a9}{operator$\ast$}} ()
+\begin{DoxyCompactList}\small\item\em Get a reference on pointed data. \end{DoxyCompactList}\item 
+T $\ast$ \mbox{\hyperlink{classsp_1_1Unique_aaf3fdbeece90cbe5f6c284c79ecfa5a6}{operator-\/$>$}} ()
+\begin{DoxyCompactList}\small\item\em Get the raw pointer. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{classsp_1_1Unique_ac6087d287e745a55f54a8bbf78d805e2}{exists}} () const
+\begin{DoxyCompactList}\small\item\em Check if the raw pointer exists. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{classsp_1_1Unique_a0dfab03cb9feb2a822b91e88bf7cb212}{operator bool}} () const
+\begin{DoxyCompactList}\small\item\em Check if the raw pointer exists. \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{classsp_1_1Unique_a54c497e684cbe591a6c40816f56771f9}\label{classsp_1_1Unique_a54c497e684cbe591a6c40816f56771f9}} 
+void {\bfseries reset} ()
+\begin{DoxyCompactList}\small\item\em Reset the unique pointer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$typename... Args$>$ }\\static \mbox{\hyperlink{classsp_1_1Unique}{Unique}} \mbox{\hyperlink{classsp_1_1Unique_a4657915d22e619feccb23a7addecdc39}{make\+Unique}} (Args \&\&...args)
+\begin{DoxyCompactList}\small\item\em Make a unique pointer. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\subsubsection*{template$<$typename T$>$\newline
+class sp\+::\+Unique$<$ T $>$}
+Smart unique pointer. 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classsp_1_1Unique_a46a87b2ffd726eafc6838ac467a3853a}\label{classsp_1_1Unique_a46a87b2ffd726eafc6838ac467a3853a}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!Unique@{Unique}}
+\index{Unique@{Unique}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Unique()}{Unique()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::\+Unique (\begin{DoxyParamCaption}\item[{T $\ast$}]{ptr = {\ttfamily nullptr} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Constructor takes a dynamic pointer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em ptr} & Pointer to the object \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classsp_1_1Unique_af13c2e5321b0c3457c2bd78074ca6801}\label{classsp_1_1Unique_af13c2e5321b0c3457c2bd78074ca6801}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!Unique@{Unique}}
+\index{Unique@{Unique}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Unique()}{Unique()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::\+Unique (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsp_1_1Unique}{Unique}}$<$ T $>$ \&\&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move constructor. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \mbox{\hyperlink{classsp_1_1Unique}{Unique}} object \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classsp_1_1Unique_ac6087d287e745a55f54a8bbf78d805e2}\label{classsp_1_1Unique_ac6087d287e745a55f54a8bbf78d805e2}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!exists@{exists}}
+\index{exists@{exists}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{exists()}{exists()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+bool \mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::exists (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Check if the raw pointer exists. 
+
+\begin{DoxyReturn}{Returns}
+True if the pointer exists, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsp_1_1Unique_a9fbc14f393bfd14e674752c07a8f3e6a}\label{classsp_1_1Unique_a9fbc14f393bfd14e674752c07a8f3e6a}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!get@{get}}
+\index{get@{get}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get()}{get()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T $\ast$ \mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::get (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the raw pointer. 
+
+\begin{DoxyReturn}{Returns}
+Raw pointer 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsp_1_1Unique_a4657915d22e619feccb23a7addecdc39}\label{classsp_1_1Unique_a4657915d22e619feccb23a7addecdc39}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!makeUnique@{makeUnique}}
+\index{makeUnique@{makeUnique}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{makeUnique()}{makeUnique()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+template$<$typename... Args$>$ \\
+static \mbox{\hyperlink{classsp_1_1Unique}{Unique}} \mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::make\+Unique (\begin{DoxyParamCaption}\item[{Args \&\&...}]{args }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [static]}}
+
+
+
+Make a unique pointer. 
+
+\begin{DoxyNote}{Note}
+usage example\+: sp\+::\+Unique$<$\+T$>$ unique\+Ptr = sp\+::\+Unique$<$\+T$>$\+::make\+Unique$<$\+T$>$($\ast$\+T); 
+\end{DoxyNote}
+
+\begin{DoxyParams}{Parameters}
+{\em args} & Arguments to the constructor of T \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A new \mbox{\hyperlink{classsp_1_1Unique}{Unique}} object 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsp_1_1Unique_a0dfab03cb9feb2a822b91e88bf7cb212}\label{classsp_1_1Unique_a0dfab03cb9feb2a822b91e88bf7cb212}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!operator bool@{operator bool}}
+\index{operator bool@{operator bool}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator bool()}{operator bool()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::operator bool (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Check if the raw pointer exists. 
+
+\begin{DoxyReturn}{Returns}
+True if the pointer exists, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsp_1_1Unique_a99e6501b1bad370ca04899e9fa9da0a9}\label{classsp_1_1Unique_a99e6501b1bad370ca04899e9fa9da0a9}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator$\ast$()}{operator*()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T \& \mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::operator$\ast$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get a reference on pointed data. 
+
+\begin{DoxyReturn}{Returns}
+Reference to the pointed data 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsp_1_1Unique_aaf3fdbeece90cbe5f6c284c79ecfa5a6}\label{classsp_1_1Unique_aaf3fdbeece90cbe5f6c284c79ecfa5a6}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!operator-\/$>$@{operator-\/$>$}}
+\index{operator-\/$>$@{operator-\/$>$}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator-\/$>$()}{operator->()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+T $\ast$ \mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::operator-\/$>$ (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+Get the raw pointer. 
+
+\begin{DoxyReturn}{Returns}
+Raw pointer 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classsp_1_1Unique_a6d360dc7fb6efc508d21d96224f9414a}\label{classsp_1_1Unique_a6d360dc7fb6efc508d21d96224f9414a}} 
+\index{sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}!operator=@{operator=}}
+\index{operator=@{operator=}!sp::Unique$<$ T $>$@{sp::Unique$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}}
+{\footnotesize\ttfamily template$<$typename T $>$ \\
+\mbox{\hyperlink{classsp_1_1Unique}{Unique}} \& \mbox{\hyperlink{classsp_1_1Unique}{sp\+::\+Unique}}$<$ T $>$\+::operator= (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classsp_1_1Unique}{Unique}}$<$ T $>$ \&\&}]{other }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [noexcept]}}
+
+
+
+Move assignment operator. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em other} & The other \mbox{\hyperlink{classsp_1_1Unique}{Unique}} object \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Reference to this \mbox{\hyperlink{classsp_1_1Unique}{Unique}} object 
+\end{DoxyReturn}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Unique.\+h\end{DoxyCompactItemize}
